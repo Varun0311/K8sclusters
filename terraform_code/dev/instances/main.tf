@@ -40,13 +40,13 @@ locals {
 }
 
 # ECR Repository
-resource "aws_ecr_repository" "assignment1" {
-  name                 = "assignment1"
+resource "aws_ecr_repository" "assignment2" {
+  name                 = "assignment2"
   image_tag_mutability = "MUTABLE"  # or "IMMUTABLE"
   
   # Add tags to the repository
   tags = {
-    "Name" = "assignment1"
+    "Name" = "assignment2"
     "Owner" = local.default_tags["Owner"]
     "Project" = local.default_tags["Project"]
     "env" = local.default_tags["env"]
@@ -56,7 +56,7 @@ resource "aws_ecr_repository" "assignment1" {
 # Reference subnet provisioned by 01-Networking 
 resource "aws_instance" "my_amazon" {
   ami                         = data.aws_ami.latest_amazon_linux.id
-  instance_type               = "t2.micro" # Adjust as needed
+  instance_type               = "t2.medium" 
   key_name                    = aws_key_pair.my_key.key_name
   vpc_security_group_ids      = [aws_security_group.my_sg.id]
   associate_public_ip_address  = true
