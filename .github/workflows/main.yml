@@ -1,0 +1,55 @@
+on: 
+  push:
+    branches: [ "main" ]
+
+jobs:
+  
+  build:
+    
+    name: Build and Push Images
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+        AWS_REGION: us-east-1
+
+    - name: Build and tag MySQL image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: assignment2
+        IMAGE_TAG: my_db
+      run: |
+        # Navigate to the directory containing Dockerfile_mysql if required
+        docker build -t my_db -f Dockerfile_mysql .
+
+        # Tag the MySQL image for ECR
+        docker tag my_db $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+        # Push the MySQL image to ECR
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    
+    - name: Run MySQL container
+      run: |
+        docker run -d -e MYSQL_ROOT_PASSWORD=pw my_db
+
+    - name: Build, tag, and push application image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: assignment2
+        IMAGE_TAG: my_app
+      run: |
+        # Build the application image
+        docker build -t my_app -f Dockerfile .
+
+        # Push application image to ECR
+        docker tag my_app $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
