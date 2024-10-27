@@ -1,0 +1,24 @@
+# Ignore Terraform state files and backup files
+*.tfstate
+*.tfstate.*
+
+# Ignore Terraform plan output files
+*.tfplan
+
+# Ignore .terraform directory
+.terraform/
+.terraform.lock.hcl
+
+# Ignore IDE configuration files (optional)
+.vscode/
+.idea/
+
+# Ignore Docker files and node_modules (if using Node.js)
+docker-compose.override.yml
+node_modules/
+dist/
+.env
+
+# Ignore Kubernetes configuration files (if they contain sensitive info)
+*.kube/config
+
